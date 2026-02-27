@@ -1,0 +1,92 @@
+---
+import { render, type CollectionEntry } from "astro:content";
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import BackButton from "@/components/BackButton.astro";
+import BackToTopButton from "@/components/BackToTopButton.astro";
+import { SITE } from "@/config";
+
+type Props = {
+  project: CollectionEntry<"projects">;
+};
+
+const { project } = Astro.props;
+
+const { title, description, tech, github, demo, image } = project.data;
+
+const { Content } = await render(project);
+
+const ogImageUrl = typeof image === "string" ? image : image?.src;
+
+const layoutProps = {
+  title: `${title} | ${SITE.title}`,
+  description,
+  ogImage: ogImageUrl,
+  scrollSmooth: true,
+};
+---
+
+<Layout {...layoutProps}>
+  <Header />
+  <BackButton />
+  <main
+    id="main-content"
+    class:list={["app-layout pb-12", { "mt-8": !SITE.showBackButton }]}
+  >
+    <h1 class="inline-block text-2xl font-bold text-accent sm:text-3xl">
+      {title}
+    </h1>
+
+    <p class="mt-2 text-skin-base">{description}</p>
+
+    <div class="mt-4 flex flex-wrap gap-2">
+      {tech.map((t) => (
+        <span class="text-sm bg-skin-accent/10 text-skin-accent px-2 py-1 rounded">
+          {t}
+        </span>
+      ))}
+    </div>
+
+    <div class="mt-4 flex gap-4">
+      {github && (
+        <a
+          href={github}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-skin-accent hover:underline"
+        >
+          GitHub
+        </a>
+      )}
+      {demo && (
+        <a
+          href={demo}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-skin-accent hover:underline"
+        >
+          Live Demo
+        </a>
+      )}
+    </div>
+
+    {ogImageUrl && (
+      <img
+        src={ogImageUrl}
+        alt={title}
+        class="mt-6 w-full max-h-80 object-cover rounded-lg"
+      />
+    )}
+
+    <article
+      id="article"
+      class="app-prose mt-8 w-full max-w-app"
+    >
+      <Content />
+    </article>
+
+    <BackToTopButton />
+  </main>
+  <Footer />
+</Layout>

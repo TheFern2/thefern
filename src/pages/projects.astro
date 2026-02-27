@@ -1,0 +1,55 @@
+---
+import { getCollection } from "astro:content";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import Breadcrumb from "@/components/Breadcrumb.astro";
+import Layout from "@/layouts/Layout.astro";
+import { SITE } from "@/config";
+
+const projects = await getCollection("projects", ({ data }) => !data.draft);
+const sortedProjects = projects.sort(
+  (a, b) => b.data.pubDatetime.getTime() - a.data.pubDatetime.getTime()
+);
+---
+
+<Layout title={`Projects | ${SITE.title}`}>
+  <Header />
+  <Breadcrumb />
+  <main id="main-content" class="app-layout">
+    <section id="projects" class="mb-28 max-w-app">
+      <h1 class="text-2xl tracking-wider sm:text-3xl mb-8">Projects</h1>
+      <ul class="grid gap-6">
+        {sortedProjects.map((project) => {
+          const imgSrc = typeof project.data.image === "string" ? project.data.image : project.data.image?.src;
+          return (
+            <li class="rounded-lg border border-skin-line p-6">
+              <a href={`/projects/${project.id}`} class="flex gap-4 hover:opacity-80">
+                <div class="flex-1">
+                  <h2 class="text-xl font-semibold text-skin-accent mb-2">
+                    {project.data.title}
+                  </h2>
+                  <p class="text-skin-base mb-4">{project.data.description}</p>
+                  <div class="flex flex-wrap gap-2 mb-4">
+                    {project.data.tech.map((t) => (
+                      <span class="text-sm bg-skin-accent/10 text-skin-accent px-2 py-1 rounded">
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                {imgSrc && (
+                  <img
+                    src={imgSrc}
+                    alt={project.data.title}
+                    class="w-40 h-32 object-cover rounded-md hidden sm:block"
+                  />
+                )}
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  </main>
+  <Footer />
+</Layout>

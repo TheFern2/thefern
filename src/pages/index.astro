@@ -1,0 +1,123 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import Socials from "@/components/Socials.astro";
+import LinkButton from "@/components/LinkButton.astro";
+import Card from "@/components/Card.astro";
+import getSortedPosts from "@/utils/getSortedPosts";
+import IconRss from "@/assets/icons/IconRss.svg";
+import IconArrowRight from "@/assets/icons/IconArrowRight.svg";
+import { SITE } from "@/config";
+import { SOCIALS } from "@/constants";
+
+const allProjects = await getCollection("projects", ({ data }) => !data.draft);
+const featuredProjects = allProjects
+  .filter(({ data }) => data.featured)
+  .sort((a, b) => b.data.pubDatetime.getTime() - a.data.pubDatetime.getTime())
+  .slice(0, 3);
+
+const posts = await getCollection("blog");
+
+const sortedPosts = getSortedPosts(posts);
+const featuredPosts = sortedPosts.filter(({ data }) => data.featured);
+const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
+---
+
+<Layout>
+  <Header />
+  <main id="main-content" data-layout="index" class="app-layout">
+    <section id="hero" class:list={["pt-8 pb-6", "border-b border-border"]}>
+      <h2 class="text-2xl font-semibold tracking-wide mb-6">Featured Projects</h2>
+      <ul class="grid gap-4">
+        {featuredProjects.map((project) => {
+          const imgSrc = typeof project.data.image === "string" ? project.data.image : project.data.image?.src;
+          return (
+            <li class="rounded-lg border border-skin-line p-4">
+              <a href={`/projects/${project.id}`} class="flex gap-4 hover:opacity-80">
+                <div class="flex-1">
+                  <h3 class="text-lg font-semibold text-skin-accent mb-1">
+                    {project.data.title}
+                  </h3>
+                  <p class="text-skin-base text-sm mb-3">{project.data.description}</p>
+                  <div class="flex flex-wrap gap-2 mb-3">
+                    {project.data.tech.map((t) => (
+                      <span class="text-xs bg-skin-accent/10 text-skin-accent px-2 py-0.5 rounded">
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                {imgSrc && (
+                  <img
+                    src={imgSrc}
+                    alt={project.data.title}
+                    class="w-32 h-24 object-cover rounded-md hidden sm:block"
+                  />
+                )}
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+      <div class="mt-6 text-center">
+        <LinkButton href="/projects/">
+          All Projects
+          <IconArrowRight class="inline-block rtl:-rotate-180" />
+        </LinkButton>
+      </div>
+    </section>
+
+    {
+      featuredPosts.length > 0 && (
+        <section
+          id="featured"
+          class:list={[
+            "pt-12 pb-6",
+            { "border-b border-border": recentPosts.length > 0 },
+          ]}
+        >
+          <h2 class="text-2xl font-semibold tracking-wide">Featured</h2>
+          <ul>
+            {featuredPosts.map(data => (
+              <Card variant="h3" {...data} />
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
+    {
+      recentPosts.length > 0 && (
+        <section id="recent-posts" class="pt-12 pb-6">
+          <h2 class="text-2xl font-semibold tracking-wide">Recent Posts</h2>
+          <ul>
+            {recentPosts.map(
+              (data, index) =>
+                index < SITE.postPerIndex && <Card variant="h3" {...data} />
+            )}
+          </ul>
+        </section>
+      )
+    }
+
+    <div class="my-8 text-center">
+      <LinkButton href="/posts/">
+        All Posts
+        <IconArrowRight class="inline-block rtl:-rotate-180" />
+      </LinkButton>
+    </div>
+  </main>
+  <Footer />
+</Layout>
+
+<script>
+  document.addEventListener("astro:page-load", () => {
+    const indexLayout = (document.querySelector("#main-content") as HTMLElement)
+      ?.dataset?.layout;
+    if (indexLayout) {
+      sessionStorage.setItem("backUrl", "/");
+    }
+  });
+</script>
