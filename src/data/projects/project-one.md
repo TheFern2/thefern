@@ -6,7 +6,7 @@ tech:
   - Astro
 github: "https://github.com/thefern/project-one"
 image: "https://picsum.photos/seed/proj1/800/400"
-featured: true
+featured: false
 pubDatetime: 2024-01-15T00:00:00Z
 ---
 

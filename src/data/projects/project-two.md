@@ -1,19 +1,19 @@
 ---
 title: "Project Two"
-description: "Another cool project you've built."
+description: "A short description of what this project does."
 tech:
-  - Rust
-  - WebAssembly
-github: "https://github.com/thefern/project-two"
-demo: "https://example.com"
-image: "https://picsum.photos/seed/proj2/800/400"
-featured: true
-pubDatetime: 2024-03-10T00:00:00Z
+  - TypeScript
+  - Astro
+github: "https://github.com/thefern/project-one"
+image: "https://picsum.photos/seed/proj1/800/400"
+featured: false
+pubDatetime: 2024-01-15T00:00:00Z
+draft: true
 ---
 
 ## Overview
 
-This is a detailed description of Project Two. Explain what problem it solves, why you built it, and what you learned.
+This is a detailed description of Project One. Explain what problem it solves, why you built it, and what you learned.
 
 ## Features
 
